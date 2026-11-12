@@ -1,0 +1,66 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Deye Cloud account",
+        "description": "Sign in with the account you use on deyecloud.com / the Deye Cloud app. The password is stored only as the SHA-256 hash the website sends.",
+        "data": {
+          "username": "E-mail, phone or user name",
+          "password": "Password",
+          "data_center": "Data center"
+        },
+        "data_description": {
+          "data_center": "The region your account lives in (the site you log in to)."
+        }
+      },
+      "reauth_confirm": {
+        "title": "Re-authenticate",
+        "description": "The password for {username} was rejected. Enter the current one.",
+        "data": {
+          "password": "Password"
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "Invalid user name or password",
+      "cannot_connect": "Cannot reach deyecloud.com"
+    },
+    "abort": {
+      "already_configured": "This account is already configured",
+      "reauth_successful": "Re-authentication was successful"
+    }
+  },
+  "selector": {
+    "data_center": {
+      "options": {
+        "eu": "Europe (eu1.deyecloud.com)",
+        "am": "Americas (us1.deyecloud.com)",
+        "india": "India"
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "power": {
+        "name": "Power"
+      },
+      "energy_today": {
+        "name": "Energy today"
+      },
+      "voltage": {
+        "name": "Panel voltage"
+      },
+      "current": {
+        "name": "Panel current"
+      },
+      "last_update": {
+        "name": "Last cloud update"
+      }
+    },
+    "binary_sensor": {
+      "online": {
+        "name": "Online"
+      }
+    }
+  }
+}

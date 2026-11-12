@@ -1,0 +1,66 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Обліковий запис Deye Cloud",
+        "description": "Увійдіть з обліковим записом deyecloud.com / застосунку Deye Cloud. Пароль зберігається лише як SHA-256 хеш, який надсилає сайт.",
+        "data": {
+          "username": "Email, телефон або ім'я користувача",
+          "password": "Пароль",
+          "data_center": "Дата-центр"
+        },
+        "data_description": {
+          "data_center": "Регіон вашого облікового запису (сайт, на який ви входите)."
+        }
+      },
+      "reauth_confirm": {
+        "title": "Повторний вхід",
+        "description": "Пароль для {username} не прийнято. Введіть поточний.",
+        "data": {
+          "password": "Пароль"
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "Неправильний логін або пароль",
+      "cannot_connect": "Немає зв'язку з deyecloud.com"
+    },
+    "abort": {
+      "already_configured": "Цей обліковий запис уже додано",
+      "reauth_successful": "Повторний вхід успішний"
+    }
+  },
+  "selector": {
+    "data_center": {
+      "options": {
+        "eu": "Європа (eu1.deyecloud.com)",
+        "am": "Америка (us1.deyecloud.com)",
+        "india": "Індія"
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "power": {
+        "name": "Потужність"
+      },
+      "energy_today": {
+        "name": "Вироблено сьогодні"
+      },
+      "voltage": {
+        "name": "Напруга панелі"
+      },
+      "current": {
+        "name": "Струм панелі"
+      },
+      "last_update": {
+        "name": "Оновлено в хмарі"
+      }
+    },
+    "binary_sensor": {
+      "online": {
+        "name": "Онлайн"
+      }
+    }
+  }
+}

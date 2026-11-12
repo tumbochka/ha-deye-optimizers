@@ -1,0 +1,12 @@
+{
+  "domain": "deye_optimizers",
+  "name": "Deye Cloud Optimizers",
+  "codeowners": ["@tumbochka"],
+  "config_flow": true,
+  "documentation": "https://github.com/tumbochka/ha-deye-optimizers",
+  "integration_type": "hub",
+  "iot_class": "cloud_polling",
+  "issue_tracker": "https://github.com/tumbochka/ha-deye-optimizers/issues",
+  "requirements": [],
+  "version": "0.1.0"
+}

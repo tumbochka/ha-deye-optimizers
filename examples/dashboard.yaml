@@ -1,0 +1,150 @@
+# Example dashboard for Deye Cloud Optimizers.
+# Requires: button-card (https://github.com/custom-cards/button-card)
+#           apexcharts-card (https://github.com/RomRider/apexcharts-card)
+#
+# Replace a2250000aa / a2250000bb with the (lower-case) serials of your optimizers,
+# as they appear in the entity ids: sensor.deye_optimizer_<serial>_power.
+#
+# For a YAML-mode dashboard put `button_card_templates` at the top level of the file;
+# in a UI dashboard: ⋮ → Edit dashboard → ⋮ → Raw configuration editor.
+
+button_card_templates:
+  deye_optimizer:
+    # A tile: power, "V · A · kWh today" and a bar comparing this panel with the
+    # best panel right now (green >= 85 %, orange >= 60 %, red below).
+    variables:
+      sn: ""
+    icon: mdi:solar-panel
+    show_state: true
+    name: "[[[ return 'Panel …' + variables.sn.slice(-4).toUpperCase(); ]]]"
+    state_display: >
+      [[[ const p = parseFloat(entity.state); return isNaN(p) ? '—' : Math.round(p) + ' W'; ]]]
+    hold_action:
+      action: more-info
+    custom_fields:
+      details: >
+        [[[
+          const v = (k, d) => { const s = states[`sensor.deye_optimizer_${variables.sn}_${k}`];
+                                const x = s ? parseFloat(s.state) : NaN; return isNaN(x) ? '—' : x.toFixed(d); };
+          return `${v('panel_voltage', 1)} V · ${v('panel_current', 2)} A · ${v('energy_today', 2)} kWh`;
+        ]]]
+      bar: >
+        [[[
+          const all = Object.keys(states).filter(id => /^sensor\.deye_optimizer_.+_power$/.test(id))
+                                         .map(id => parseFloat(states[id].state) || 0);
+          const max = Math.max(...all, 0), p = parseFloat(entity.state) || 0, r = max > 0 ? p / max : 0;
+          const c = max < 15 ? 'var(--secondary-text-color)' : r < 0.6 ? 'var(--error-color)'
+                  : r < 0.85 ? 'var(--warning-color)' : 'var(--success-color)';
+          return `<div style="height:6px;border-radius:3px;background:var(--divider-color)">
+                  <div style="width:${Math.round(r * 100)}%;height:6px;border-radius:3px;background:${c}"></div></div>`;
+        ]]]
+    styles:
+      card:
+        - padding: 12px
+      grid:
+        - grid-template-areas: '"i n" "i s" "details details" "bar bar"'
+        - grid-template-columns: 40px 1fr
+      icon:
+        - width: 30px
+        - color: >
+            [[[ const o = states[`binary_sensor.deye_optimizer_${variables.sn}_online`];
+                return o && o.state === 'on' ? 'var(--amber-color, #ffb300)' : 'var(--disabled-text-color)'; ]]]
+      name:
+        - justify-self: start
+        - font-size: 13px
+        - opacity: 0.75
+      state:
+        - justify-self: start
+        - font-size: 22px
+        - font-weight: 600
+      custom_fields:
+        details:
+          - justify-self: start
+          - font-size: 12px
+          - color: var(--secondary-text-color)
+        bar:
+          - width: 100%
+          - padding-top: 6px
+
+views:
+  - title: Panels
+    path: panels
+    cards:
+      - type: grid
+        columns: 2
+        square: false
+        cards:
+          - type: custom:button-card
+            template: deye_optimizer
+            entity: sensor.deye_optimizer_a2250000aa_power
+            variables:
+              sn: a2250000aa
+            tap_action:
+              action: navigate
+              navigation_path: panel-a2250000aa
+          - type: custom:button-card
+            template: deye_optimizer
+            entity: sensor.deye_optimizer_a2250000bb_power
+            variables:
+              sn: a2250000bb
+            tap_action:
+              action: navigate
+              navigation_path: panel-a2250000bb
+
+  # One subview per panel: a Deye-style day chart with four axes.
+  - title: Panel A2250000AA
+    path: panel-a2250000aa
+    subview: true
+    cards:
+      - type: custom:apexcharts-card
+        header:
+          show: true
+          title: Panel A2250000AA — today
+          show_states: true
+          colorize_states: true
+        graph_span: 24h
+        span:
+          start: day
+        yaxis:
+          - id: w
+            min: 0
+            decimals: 0
+          - id: v
+            min: 0
+            decimals: 0
+          - id: a
+            min: 0
+            opposite: true
+            decimals: 1
+          - id: kwh
+            min: 0
+            opposite: true
+            decimals: 2
+        series:
+          - entity: sensor.deye_optimizer_a2250000aa_panel_voltage
+            name: Voltage
+            yaxis_id: v
+            type: area
+            color: "#1e88e5"
+            opacity: 0.15
+          - entity: sensor.deye_optimizer_a2250000aa_power
+            name: Power
+            yaxis_id: w
+            color: "#e53935"
+          - entity: sensor.deye_optimizer_a2250000aa_panel_current
+            name: Current
+            yaxis_id: a
+            color: "#8e24aa"
+          - entity: sensor.deye_optimizer_a2250000aa_energy_today
+            name: Energy
+            yaxis_id: kwh
+            curve: stepline
+            color: "#43a047"
+      - type: statistics-graph
+        title: Energy per day
+        chart_type: bar
+        period: day
+        days_to_show: 30
+        stat_types: [change]
+        entities:
+          - sensor.deye_optimizer_a2250000aa_energy_today
